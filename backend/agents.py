@@ -13,6 +13,12 @@ flash = ChatGoogleGenerativeAI(
     request_timeout=120,
     max_retries=3
 )
+pro = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    google_api_key=os.getenv("GOOGLE_API_KEY"),
+    request_timeout=120,
+    max_retries=3
+)
 
 CONSTITUTION = """
 You are an agent operating inside AXIOM, an autonomous business operating system.
@@ -69,3 +75,77 @@ def run_operations_agent(scenario: str) -> str:
     ]
     response = flash.invoke(messages)
     return response.content
+
+
+def run_conflict_resolver(scenario: str, sales_proposal: str, finance_proposal: str, operations_proposal: str) -> dict:
+    prompt = f"""
+You are the Governor of AXIOM — an autonomous AI judge.
+
+SCENARIO: {scenario}
+SALES PROPOSAL: {sales_proposal}
+FINANCE PROPOSAL: {finance_proposal}
+OPERATIONS PROPOSAL: {operations_proposal}
+
+Respond ONLY with valid JSON. No markdown. No code blocks. No newlines inside string values. Keep each string value on one line.
+
+{{
+"winner": "Sales or Finance or Operations or Hybrid",
+"decision": "Action in one sentence",
+"reasoning": "Reasoning in one paragraph without quotes or newlines",
+"conditions": "Conditions in one line",
+"risk_flags": "Risks in one line",
+"confidence": 85
+}}
+"""
+    messages = [
+        SystemMessage(content="You are the AXIOM Governor. Output ONLY raw JSON. No markdown formatting. No newlines inside strings."),
+        HumanMessage(content=prompt)
+    ]
+    response = pro.invoke(messages)
+    fallback = {
+        "winner": "Hybrid",
+        "decision": "Parser failed",
+        "reasoning": "Could not parse model output",
+        "conditions": "",
+        "risk_flags": "",
+        "confidence": 50
+    }
+    return parse_json_safe(response.content, fallback)
+
+
+def run_auditor(scenario: str, decision: dict, agent_proposals: dict) -> dict:
+    prompt = f"""
+You are the AXIOM Auditor. Score the decision and agents.
+
+SCENARIO: {scenario}
+DECISION: {decision}
+
+Respond ONLY with valid JSON. No markdown. No newlines inside strings.
+
+{{
+"sales_score": 75,
+"finance_score": 80,
+"operations_score": 70,
+"decision_quality": 85,
+"overall_health": "Good",
+"agents_needing_improvement": [],
+"improvement_reason": "",
+"audit_summary": "Brief summary in one line"
+}}
+"""
+    messages = [
+        SystemMessage(content="You are the AXIOM Auditor. Output ONLY raw JSON. No markdown. No newlines inside strings."),
+        HumanMessage(content=prompt)
+    ]
+    response = pro.invoke(messages)
+    fallback = {
+        "sales_score": 70,
+        "finance_score": 70,
+        "operations_score": 70,
+        "decision_quality": 70,
+        "overall_health": "Unknown",
+        "agents_needing_improvement": [],
+        "improvement_reason": "",
+        "audit_summary": "Parser failed"
+    }
+    return parse_json_safe(response.content, fallback)
