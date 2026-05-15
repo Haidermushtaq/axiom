@@ -46,9 +46,16 @@ npm run dev
 
 Add your `GOOGLE_API_KEY` to `backend/.env`.
 
+## Documentation
+
+- [Architecture](docs/ARCHITECTURE.md) — agent roles, LangGraph pipeline, self-improvement loop, stack
+- [API Reference](docs/API.md) — all endpoints with request/response examples
+- [Demo Script](docs/DEMO.md) — pitch, walkthrough, and judge FAQ
+
 ## Team Orchestrator
 
 **Haider Mushtaq** — AI Engineer, Backend & Agent Architecture
 Final Year AI Student, CIIT Wah Cantt
 
 **Amman Khan** — Co-founder, AI Engineer & Full Stack Developer
+GitHub: [AMAN-X12](https://github.com/AMAN-X12)
