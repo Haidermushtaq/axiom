@@ -4,15 +4,13 @@ AXIOM is a self-governing multi-agent system. Five specialized AI agents powered
 
 ## Agent Roles
 
-**Revenue** — Sales perspective. Pushes for customer acquisition and revenue growth. Proposes bold commercial actions.
-
-**Risk** — Finance perspective. Protects margins and flags budget exposure. Proposes conservative, numbers-driven actions.
-
-**Execute** — Operations perspective. Focuses on logistics, efficiency, and feasibility. Proposes actions that can actually be implemented.
-
-**AXIOM Core** — The Governor. Receives all three proposals, reads the conflict between them, reasons through the tradeoffs against the company constitution, and issues a binding decision with full written justification.
-
-**Sentinel** — The Auditor. Scores every agent's output 0–100 across five dimensions: constitutional alignment, risk management, business impact, creativity, and feasibility. Triggers the self-improvement loop for any agent scoring below 60.
+| Agent | Role | Mandate |
+|---|---|---|
+| **Revenue** | Sales Agent | Pushes for customer acquisition and revenue growth. Proposes bold commercial actions. |
+| **Risk** | Finance Agent | Protects margins and flags budget exposure. Proposes conservative, numbers-driven actions. |
+| **Execute** | Operations Agent | Focuses on logistics, efficiency, and feasibility. Proposes actions that can actually be implemented. |
+| **AXIOM Core** | Governor | Receives all three proposals, reasons through the tradeoffs against the company constitution, and issues a binding decision with full written justification. |
+| **Sentinel** | Auditor | Scores every agent's output 0–100. Triggers the self-improvement loop for any agent scoring below 60. |
 
 ## LangGraph Orchestration
 
@@ -29,19 +27,27 @@ graph LR
     H --> I
 ```
 
-The graph runs as a deterministic pipeline. Each node receives the full state object and adds its output before passing it to the next node. The Governor node receives all three proposals simultaneously. The Auditor node has access to the full decision context.
+The graph runs as a deterministic pipeline. Each node receives the full `AxiomState` object and appends its output before passing it downstream. The Governor receives all three proposals simultaneously. The Auditor has access to the full decision context before scoring.
 
 ## Self-Improvement Loop
 
-When Sentinel scores an agent below 60, AXIOM calls Gemini 2.5 Flash with the agent's current system prompt, the audit feedback, and the scenario context. Gemini rewrites the prompt to correct the identified weaknesses. The new prompt is stored in prompt_history.json with a version number and timestamp. The next run uses the improved prompt automatically.
+When Sentinel scores an agent below 60, AXIOM:
 
-## Stack
+1. Retrieves the agent's current system prompt from `prompt_history.json`
+2. Calls Gemini 2.5 Flash with the prompt, the audit feedback, and the scenario context
+3. Gemini rewrites the prompt to address the identified weaknesses
+4. The new prompt is saved to `prompt_history.json` with a version number and timestamp
+5. All subsequent runs use the improved prompt automatically
+
+The `/prompts` endpoint exposes the full rewrite history for every agent.
+
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Agent Intelligence | Gemini 2.5 Flash via Google AI Studio |
-| Orchestration | LangGraph |
-| Backend API | FastAPI (Python) |
-| Frontend | React + Vite + Tailwind CSS |
+| Agent Intelligence | Gemini 2.5 Flash via `langchain-google-genai` |
+| Orchestration | LangGraph (`StateGraph` + `AxiomState`) |
+| Backend API | FastAPI + Uvicorn (Python) |
+| Frontend | React 18 + Vite 6 + Tailwind CSS v4 |
 | Deployment | Vultr Ubuntu 24.04 + Nginx + systemd |
-| Storage | File-based JSON |
+| Storage | File-based JSON (`decisions.json`, `prompt_history.json`) |

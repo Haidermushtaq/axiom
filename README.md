@@ -30,32 +30,41 @@ Python + FastAPI backend, LangGraph for orchestration, Gemini 2.5 Flash for all 
 
 Most agent systems run once and stop. AXIOM runs continuously and gets better. The self-improvement loop is the part nobody else built — when an agent consistently makes poor decisions, the system rewrites its own instructions without human input.
 
-## Running it
+## Live Demo
+🚀 **[http://66.245.203.1](http://66.245.203.1)**
 
+## Run Locally
+
+Prerequisites: Python 3.10+, Node.js 18+
+
+**Backend:**
 ```bash
-# Backend
-cd backend
+git clone https://github.com/Haidermushtaq/axiom
+cd axiom/backend
+python -m venv venv
+venv\Scripts\activate
 pip install -r requirements.txt
+cp .env.example .env
 uvicorn main:app --reload
+```
 
-# Frontend
-cd frontend
+**Frontend:**
+```bash
+cd axiom/frontend
 npm install
 npm run dev
 ```
 
-Add your `GOOGLE_API_KEY` to `backend/.env`.
+Open http://localhost:5173
 
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md) — agent roles, LangGraph pipeline, self-improvement loop, stack
 - [API Reference](docs/API.md) — all endpoints with request/response examples
-- [Demo Script](docs/DEMO.md) — pitch, walkthrough, and judge FAQ
 
 ## Team Orchestrator
 
-**Haider Mushtaq** — AI Engineer, Backend & Agent Architecture
+**[Haider Mushtaq](https://github.com/Haidermushtaq)** — AI Engineer, Backend & Agent Architecture
 Final Year AI Student, CIIT Wah Cantt
 
-**Amman Khan** — Co-founder, AI Engineer & Full Stack Developer
-GitHub: [AMAN-X12](https://github.com/AMAN-X12)
+**[Amman Khan](https://github.com/AMAN-X12)** — Co-founder & Orchestrator
