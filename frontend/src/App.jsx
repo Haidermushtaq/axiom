@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const BASE = 'http://localhost:8000'
+const BASE = ''
 
 const AGENTS = [
   { key: 'sales',      name: 'Revenue',    role: 'Growth & Acquisition',     color: '#3b82f6', light: '#eff6ff', border: '#bfdbfe' },
